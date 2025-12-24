@@ -274,7 +274,6 @@
 </body>
 </html>
 -->
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -300,6 +299,10 @@
             color: #0056b3;
             border-bottom: 2px solid #0056b3;
             padding-bottom: 10px;
+            /* FIX: This forces the text to stay on one line */
+            white-space: nowrap; 
+            overflow: hidden; /* Hides any text that goes outside the box */
+            text-overflow: ellipsis; /* Adds "..." if it overflows */
         }
 
         /* Form Styling */
@@ -362,7 +365,7 @@
         
         <div class="form-container">
             <input type="text" id="item-name-input" placeholder="Enter new item name">
-            <button onclick="addNewItem()" class="add-btn">Apna Naam Dalo</button>
+            <button onclick="addNewItem()" class="add-btn">Add Item</button>
         </div>
 
         <ul id="items-list">
@@ -380,7 +383,6 @@
                 .then(data => {
                     data.forEach(item => {
                         const li = document.createElement('li');
-                        // MODIFIED: Only display the name of the item
                         li.textContent = item.name;
 
                         const deleteBtn = document.createElement('button');

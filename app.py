@@ -27,25 +27,68 @@
 #    app.run(host='0.0.0.0', port=port)
 #
 
+#====================================================#
+#import os
+#from flask import Flask, jsonify, render_template
+#
+#app = Flask(__name__)
+#
+#items_data = [
+#    {"id": 1, "name": "RAM"},
+#    {"id": 2, "name": "Krishna"},
+#    {"id": 3, "name": "Hari !!"}
+#]
+#
+#@app.route('/')
+#def index():
+#    return render_template('index.html')
+#
+#@app.route('/api/items', methods=['GET'])
+#def get_items():
+#    return jsonify(items_data)
+#
+# No need for app.run() here for Azure, 
+# Gunicorn handles the port and host automatically.
+#====================================================#
+
 
 import os
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
+# A simple in-memory "database" 
 items_data = [
     {"id": 1, "name": "RAM"},
     {"id": 2, "name": "Krishna"},
     {"id": 3, "name": "Hari !!"}
 ]
 
+# Helper function to generate unique IDs for new items
+def get_next_id():
+    return max(item['id'] for item in items_data) + 1 if items_data else 1
+
+# Root route serves the frontend HTML page
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# API endpoint returns JSON data (GET)
 @app.route('/api/items', methods=['GET'])
 def get_items():
     return jsonify(items_data)
 
-# No need for app.run() here for Azure, 
-# Gunicorn handles the port and host automatically.
+# API endpoint to ADD data (POST)
+@app.route('/api/items', methods=['POST'])
+def add_item():
+    new_item_data = request.get_json() # Get JSON data sent from JavaScript
+    if new_item_data and 'name' in new_item_data:
+        new_item = {
+            "id": get_next_id(),
+            "name": new_item_data['name']
+        }
+        items_data.append(new_item) # Add to our list
+        return jsonify(new_item), 201 # Return the new item and 201 Created status
+    return jsonify({"error": "Invalid data provided"}), 400
+
+# NOTE: You still need the Azure Portal settings and requirements.txt from previous steps!

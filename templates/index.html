@@ -1,3 +1,4 @@
+<!-- Static Web Page..
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,7 +14,7 @@
     <div class="container">
         <h1>Integrated App (Flask Frontend & API)</h1>
         <ul id="items-list">
-            <!-- Items will be loaded here by JavaScript -->
+            
         </ul>
     </div>
     <script>
@@ -35,6 +36,78 @@
                     document.getElementById('items-list').innerHTML = '<li>Error loading data. Check console and network tab.</li>';
                 });
         });
+    </script>
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Azure Integrated App</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        ul { list-style-type: none; padding: 0; }
+        li { background-color: #f2f2f2; margin: 5px 0; padding: 10px; border-radius: 5px; }
+        .form-container { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Integrated App (Flask Frontend & API)</h1>
+        
+        <div class="form-container">
+            <input type="text" id="item-name-input" placeholder="Enter new item name">
+            <button onclick="addNewItem()">Add Item</button>
+        </div>
+
+        <ul id="items-list">
+            <!-- Items will be loaded here by JavaScript -->
+        </ul>
+    </div>
+    <script>
+        const API_URL = '/api/items';
+        const list = document.getElementById('items-list');
+
+        function fetchItems() {
+            list.innerHTML = ''; // Clear list before fetching
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = `ID: ${item.id}, Name: ${item.name}`;
+                        list.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching items:', error);
+                    list.innerHTML = '<li>Error loading data. Check console and network tab.</li>';
+                });
+        }
+
+        function addNewItem() {
+            const input = document.getElementById('item-name-input');
+            const name = input.value;
+            if (!name) return;
+
+            fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: name })
+            })
+            .then(response => response.json())
+            .then(() => {
+                input.value = ''; // Clear input field
+                fetchItems(); // Refresh the list dynamically after successful POST
+            })
+            .catch(error => console.error('Error adding item:', error));
+        }
+
+        // Fetch items when the page loads
+        document.addEventListener('DOMContentLoaded', fetchItems);
     </script>
 </body>
 </html>

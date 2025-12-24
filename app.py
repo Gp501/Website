@@ -34,9 +34,9 @@ from flask import Flask, jsonify, render_template
 app = Flask(__name__)
 
 items_data = [
-    {"id": 1, "name": "Integrated Item A"},
-    {"id": 2, "name": "Integrated Item B"},
-    {"id": 3, "name": "Integrated Item C"}
+    {"id": 1, "Name": "RAM"},
+    {"id": 2, "Name": "Krishna"},
+    {"id": 3, "Name": "Hari !!"}
 ]
 
 @app.route('/')

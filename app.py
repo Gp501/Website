@@ -113,23 +113,28 @@ def get_next_id():
 def index():
     return render_template('index.html')
 
-# API endpoint returns JSON data (GET)
 @app.route('/api/items', methods=['GET'])
 def get_items():
     return jsonify(items_data)
 
-# API endpoint to ADD data (POST)
+# API endpoint to ADD data (POST) with validation
 @app.route('/api/items', methods=['POST'])
 def add_item():
     new_item_data = request.get_json()
-    if new_item_data and 'name' in new_item_data:
-        new_item = {
-            "id": get_next_id(),
-            "name": new_item_data['name']
-        }
-        items_data.append(new_item)
-        return jsonify(new_item), 201
-    return jsonify({"error": "Invalid data provided"}), 400
+    if not new_item_data or 'name' not in new_item_data:
+        abort(400, description="Invalid data provided")
+    
+    item_name = new_item_data['name']
+    # SECURITY: Validate input length
+    if len(item_name) > 1000:
+        abort(400, description="Item name cannot exceed 1000 characters")
+
+    new_item = {
+        "id": get_next_id(),
+        "name": item_name
+    }
+    items_data.append(new_item)
+    return jsonify(new_item), 201
 
 # API endpoint to DELETE data (DELETE)
 @app.route('/api/items/<int:item_id>', methods=['DELETE'])
@@ -140,7 +145,5 @@ def delete_item(item_id):
         items_data.remove(item_to_delete)
         return jsonify({"message": f"Item {item_id} deleted"}), 200
     else:
-        # Return 404 Not Found if the ID doesn't exist
         abort(404, description="Item not found")
 
-# NOTE: Remember your requirements.txt and Azure Portal settings!

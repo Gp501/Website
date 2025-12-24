@@ -40,6 +40,8 @@
 </body>
 </html>
 -->
+
+<!-- Adding the Item
 <!DOCTYPE html>
 <html>
 <head>
@@ -62,7 +64,7 @@
         </div>
 
         <ul id="items-list">
-            <!-- Items will be loaded here by JavaScript -->
+          
         </ul>
     </div>
     <script>
@@ -107,6 +109,166 @@
         }
 
         // Fetch items when the page loads
+        document.addEventListener('DOMContentLoaded', fetchItems);
+    </script>
+</body>
+</html>
+
+
+
+
+-->
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Azure Integrated App</title>
+    <link href="fonts.googleapis.com" rel="stylesheet">
+    <style>
+        /* General Body Styling */
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            background-color: #e9ecef; 
+            padding: 40px 20px; 
+            margin: 0;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: auto; 
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0056b3;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+        }
+
+        /* Form Styling */
+        .form-container { 
+            margin-bottom: 20px; 
+            display: flex;
+            gap: 10px;
+        }
+        #item-name-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        /* Add Button Styling */
+        .add-btn {
+            background-color: #28a745; /* Green */
+            color: white;
+        }
+
+        /* List Styling */
+        ul { 
+            list-style-type: none; 
+            padding: 0; 
+        }
+        li { 
+            background-color: #f8f9fa; 
+            margin: 10px 0; 
+            padding: 15px; 
+            border-radius: 5px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border: 1px solid #dee2e6;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        /* Delete Button Styling */
+        .delete-btn { 
+            background-color: #dc3545; /* Red */
+            color: white; 
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Integrated App (Flask Frontend & API)</h1>
+        
+        <div class="form-container">
+            <input type="text" id="item-name-input" placeholder="Enter new item name">
+            <button onclick="addNewItem()" class="add-btn">Add Item</button>
+        </div>
+
+        <ul id="items-list">
+            <!-- Items will be loaded here by JavaScript -->
+        </ul>
+    </div>
+    <script>
+        // JavaScript remains unchanged from the previous version
+        const API_URL = '/api/items';
+        const list = document.getElementById('items-list');
+
+        function fetchItems() {
+            list.innerHTML = ''; 
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = `ID: ${item.id}, Name: ${item.name}`;
+
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = 'Delete';
+                        deleteBtn.className = 'delete-btn';
+                        deleteBtn.onclick = () => deleteItem(item.id); 
+                        
+                        li.appendChild(deleteBtn);
+                        list.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error fetching items:', error));
+        }
+
+        function addNewItem() {
+            const input = document.getElementById('item-name-input');
+            const name = input.value;
+            if (!name) return;
+
+            fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name })
+            })
+            .then(() => {
+                input.value = ''; 
+                fetchItems(); 
+            })
+            .catch(error => console.error('Error adding item:', error));
+        }
+
+        function deleteItem(itemId) {
+            fetch(`${API_URL}/${itemId}`, {
+                method: 'DELETE'
+            })
+            .then(() => {
+                fetchItems();
+            })
+            .catch(error => console.error('Error deleting item:', error));
+        }
+
         document.addEventListener('DOMContentLoaded', fetchItems);
     </script>
 </body>
